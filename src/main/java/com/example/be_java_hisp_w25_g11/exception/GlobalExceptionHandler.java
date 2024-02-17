@@ -1,5 +1,6 @@
 package com.example.be_java_hisp_w25_g11.exception;
 
+import com.example.be_java_hisp_w25_g11.dto.ExceptionDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
