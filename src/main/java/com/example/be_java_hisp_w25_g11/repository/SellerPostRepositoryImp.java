@@ -17,7 +17,7 @@ public class SellerPostRepositoryImp implements ISellerPostRepository{
     }
 
     @Override
-    public Boolean createPost(SellerPost sellerId) {
-        return null;
+    public void createPost(SellerPost sellerId) {
+
     }
 }

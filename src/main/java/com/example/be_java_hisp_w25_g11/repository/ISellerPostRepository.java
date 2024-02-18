@@ -10,6 +10,6 @@ public interface ISellerPostRepository {
     List<Product> products = null;
     List<SellerPost> getAllSellerPosts();
 
-    Boolean createPost(SellerPost sellerId);
+    void createPost(SellerPost sellerId);
 
 }
