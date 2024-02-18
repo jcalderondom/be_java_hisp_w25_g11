@@ -5,9 +5,10 @@ import java.util.List;
 
 public interface IBuyerRepository {
     List<Buyer> getAllBuyers();
-    void createBuyer(Long id, String name);
+    void createBuyer(Buyer buyer);
     void getBuyer(Long id);
     void editBuyer(Long id);
     void deleteBuyer(Long id);
+    boolean existingBuyer(Long id);
 
 }
