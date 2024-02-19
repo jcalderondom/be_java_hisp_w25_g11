@@ -4,6 +4,7 @@ import com.example.be_java_hisp_w25_g11.dto.response.FollowedDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowersCountDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowersDTO;
 import com.example.be_java_hisp_w25_g11.dto.SuccessDTO;
+import com.example.be_java_hisp_w25_g11.service.IUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,16 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/users/{userId}")
 public class UserController {
+    IUserService userService;
+
+    public UserController(IUserService userService) {
+        this.userService = userService;
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<?> test() {
+        return new ResponseEntity<>(userService.followersSellersCount(1L), HttpStatus.OK);
+    }
 
     @PostMapping("/follow/{userIdToFollow}")
     public ResponseEntity<SuccessDTO> follow(

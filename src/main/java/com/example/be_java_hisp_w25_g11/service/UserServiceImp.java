@@ -12,6 +12,7 @@ import com.example.be_java_hisp_w25_g11.exception.NotFoundException;
 import com.example.be_java_hisp_w25_g11.repository.buyer.BuyerRepositoryImp;
 import com.example.be_java_hisp_w25_g11.repository.seller.SellerRepositoryImp;
 import org.modelmapper.ModelMapper;
+import com.example.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,7 +38,11 @@ public class UserServiceImp implements IUserService{
 
     @Override
     public FollowersCountDTO followersSellersCount(Long sellerId) {
-        return null;
+        return new FollowersCountDTO (
+                1L,
+                "test",
+                buyerRepository.getAll().size()
+        );
     }
 
     @Override
