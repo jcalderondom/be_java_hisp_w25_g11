@@ -1,13 +1,35 @@
 package com.example.be_java_hisp_w25_g11.service;
 
+import com.example.be_java_hisp_w25_g11.dto.UserDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowedDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowersCountDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowersDTO;
 import com.example.be_java_hisp_w25_g11.dto.SuccessDTO;
+import com.example.be_java_hisp_w25_g11.entity.Buyer;
+import com.example.be_java_hisp_w25_g11.entity.Seller;
+import com.example.be_java_hisp_w25_g11.entity.User;
+import com.example.be_java_hisp_w25_g11.exception.NotFoundException;
+import com.example.be_java_hisp_w25_g11.repository.buyer.BuyerRepositoryImp;
+import com.example.be_java_hisp_w25_g11.repository.seller.SellerRepositoryImp;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserServiceImp implements IUserService{
+
+    private BuyerRepositoryImp buyerRepositoryImp;
+    private SellerRepositoryImp sellerRepositoryImp;
+    private ModelMapper mapper;
+
+    public UserServiceImp(BuyerRepositoryImp buyerRepositoryImp, SellerRepositoryImp sellerRepositoryImp, ModelMapper mapper) {
+        this.buyerRepositoryImp = buyerRepositoryImp;
+        this.sellerRepositoryImp = sellerRepositoryImp;
+        this.mapper = mapper;
+    }
+
     @Override
     public SuccessDTO follow(Long userIdToFollow) {
         return null;
@@ -25,7 +47,26 @@ public class UserServiceImp implements IUserService{
 
     @Override
     public FollowedDTO sellersFollowingByUsers(Long userId) {
-        return null;
+        Set<Seller> followedByUser;
+        if (sellerRepositoryImp.existing(userId)) {
+            Seller sellerResult = sellerRepositoryImp.getAll().stream()
+                    .filter(seller -> seller.getId().equals(userId))
+                    .findFirst().orElse(null);
+            followedByUser = sellerResult != null ? sellerResult.getFollowed() : null;
+
+        } else if (buyerRepositoryImp.existing(userId)) {
+            Buyer buyerResult = buyerRepositoryImp.getAll().stream()
+                    .filter(seller -> seller.getId().equals(userId))
+                    .findFirst().orElse(null);
+            followedByUser = buyerResult != null ? buyerResult.getFollowed() : null;
+
+        } else {
+            throw new NotFoundException("El usuario ingresado no existe");
+        }
+        List<UserDTO> followedByUserDto = followedByUser.stream()
+                .map(seller -> mapper.map(seller,UserDTO.class))
+                .toList();
+        return new FollowedDTO(userId,)
     }
 
     @Override
