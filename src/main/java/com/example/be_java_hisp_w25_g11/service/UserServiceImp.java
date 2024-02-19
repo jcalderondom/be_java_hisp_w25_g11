@@ -55,9 +55,9 @@ public class UserServiceImp implements IUserService {
             ((Seller) user).getFollowed().add(userIdToFollow);
             ((Seller) userToFollow).getFollowers().add(userId);
         } else {
-            throw new InternalServerErrorException("El usuario con id="+userId+" no es ni comprador ni vendedor."); // TODO InternalServerErrorException
+            throw new BadRequestException("El usuario con id="+userId+" no es ni comprador ni vendedor."); // TODO BadRequestException
         }
-        return new SuccessDTO("El usuario con id="+userId+" ahora sigue al usuario con id="+userIdToFollow+".");
+        return new SuccessDTO("El usuario con id="+userId+" ahora sigue al vendedor con id="+userIdToFollow+".");
     }
 
     @Override
@@ -81,7 +81,25 @@ public class UserServiceImp implements IUserService {
 
     @Override
     public SuccessDTO unfollow(Long userId, Long sellerIdToUnfollow) {
-        return null;
+        Object user = getUser(userId);
+        Object userToUnfollow = getUser(sellerIdToUnfollow);
+
+        if (user instanceof Buyer) {
+            if (!((Buyer) user).getFollowed().contains(sellerIdToUnfollow)) {
+                throw new BadRequestException("El comprador con id="+userId+" no sigue al vendedor con id"+userToUnfollow+"."); // TODO BadRequestException
+            }
+            ((Buyer) user).getFollowed().remove(sellerIdToUnfollow);
+            ((Seller) userToUnfollow).getFollowers().remove(userId);
+        } else if (user instanceof Seller) {
+            if (!((Seller) user).getFollowed().contains(sellerIdToUnfollow)) {
+                throw new BadRequestException("El vendedor con id="+userId+" no sigue al vendedor con id"+userToUnfollow+"."); // TODO BadRequestException
+            }
+            ((Seller) user).getFollowed().remove(sellerIdToUnfollow);
+            ((Seller) userToUnfollow).getFollowers().remove(userId);
+        } else {
+            throw new BadRequestException("El usuario con id="+userId+" no es ni comprador ni vendedor."); // TODO BadRequestException
+        }
+        return new SuccessDTO("El usuario con id="+userId+" ha dejado de seguir al vendedor con id="+sellerIdToUnfollow+".");
     }
 
     @Override
