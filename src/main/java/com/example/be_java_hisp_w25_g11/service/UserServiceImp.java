@@ -43,17 +43,19 @@ public class UserServiceImp implements IUserService {
         }
 
         if (user instanceof Buyer) {
-            if (!((Buyer) user).getFollowed().contains(userIdToFollow)) {
-                throw new BadRequestException("El comprador con id="+userId+" ya sigue al vendedor."); // TODO BadRequestException
+            if (((Buyer) user).getFollowed().contains(userIdToFollow)) {
+                throw new BadRequestException("El comprador con id="+userId+" ya sigue al vendedor con id"+userToFollow+"."); // TODO BadRequestException
             }
             ((Buyer) user).getFollowed().add(userIdToFollow);
             ((Seller) userToFollow).getFollowers().add(userId);
         } else if (user instanceof Seller) {
-            if (!((Seller) user).getFollowed().contains(userIdToFollow)) {
-                throw new BadRequestException("El vendedor con id="+userId+" ya sigue al vendedor."); // TODO BadRequestException
+            if (((Seller) user).getFollowed().contains(userIdToFollow)) {
+                throw new BadRequestException("El vendedor con id="+userId+" ya sigue al vendedor con id"+userToFollow+"."); // TODO BadRequestException
             }
             ((Seller) user).getFollowed().add(userIdToFollow);
             ((Seller) userToFollow).getFollowers().add(userId);
+        } else {
+            throw new InternalServerErrorException("El usuario con id="+userId+" no es ni comprador ni vendedor."); // TODO InternalServerErrorException
         }
         return new SuccessDTO("El usuario con id="+userId+" ahora sigue al usuario con id="+userIdToFollow+".");
     }
