@@ -25,6 +25,12 @@ public class SellerRepositoryImp implements ISellerRepository {
     }
 
     @Override
+    public List<Seller> createAll(List<Seller> entities) {
+        entities.forEach(s -> sellers.put(s.getId(), s));
+        return entities;
+    }
+
+    @Override
     public boolean create(Seller user) {
         if (existing(user.getId())){
             return false;
