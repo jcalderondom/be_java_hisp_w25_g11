@@ -5,6 +5,7 @@ import com.example.be_java_hisp_w25_g11.dto.response.FollowerCountDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowerDTO;
 import com.example.be_java_hisp_w25_g11.dto.SuccessDTO;
 import com.example.be_java_hisp_w25_g11.service.UserServiceImp;
+import com.example.be_java_hisp_w25_g11.service.IUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

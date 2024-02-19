@@ -10,8 +10,8 @@ import com.example.be_java_hisp_w25_g11.exception.NotFoundException;
 import com.example.be_java_hisp_w25_g11.repository.buyer.BuyerRepositoryImp;
 import com.example.be_java_hisp_w25_g11.repository.seller.SellerRepositoryImp;
 import org.modelmapper.ModelMapper;
+import com.example.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -28,8 +28,8 @@ public class UserServiceImp implements IUserService{
     ) {
         this.buyerRepositoryImp = buyerRepositoryImp;
         this.sellerRepositoryImp = sellerRepositoryImp;
-        this.mapper = mapper;
-    }
+        this.mapper = mapper;}
+
 
     @Override
     public SuccessDTO follow(Long userIdToFollow) {
@@ -39,6 +39,7 @@ public class UserServiceImp implements IUserService{
     @Override
     public FollowerCountDTO followersSellersCount(Long sellerId) {
         return null;
+
     }
 
     @Override
