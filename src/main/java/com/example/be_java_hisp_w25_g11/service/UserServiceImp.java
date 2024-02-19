@@ -4,10 +4,17 @@ import com.example.be_java_hisp_w25_g11.dto.response.FollowedDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowersCountDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowersDTO;
 import com.example.be_java_hisp_w25_g11.dto.SuccessDTO;
+import com.example.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserServiceImp implements IUserService{
+public class UserServiceImp implements IUserService {
+    private IBuyerRepository buyerRepository;
+
+    public UserServiceImp(IBuyerRepository buyerRepository) {
+        this.buyerRepository = buyerRepository;
+    }
+
     @Override
     public SuccessDTO follow(Long userIdToFollow) {
         return null;
@@ -15,7 +22,11 @@ public class UserServiceImp implements IUserService{
 
     @Override
     public FollowersCountDTO followersSellersCount(Long sellerId) {
-        return null;
+        return new FollowersCountDTO (
+                1L,
+                "test",
+                buyerRepository.getAll().size()
+        );
     }
 
     @Override

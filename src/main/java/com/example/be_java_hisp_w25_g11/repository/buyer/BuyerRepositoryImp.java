@@ -22,6 +22,11 @@ public class BuyerRepositoryImp implements IBuyerRepository {
     }
 
     @Override
+    public List<Buyer> createAll(List<Buyer> entities) {
+        entities.forEach(b -> buyers.put(b.getId(), b));
+        return entities;    }
+
+    @Override
     public boolean create(Buyer user) {
         if (existing(user.getId())){
             return false;

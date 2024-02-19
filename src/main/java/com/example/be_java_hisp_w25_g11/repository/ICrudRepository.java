@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface ICrudRepository <T, ID> {
     List<T> getAll();
+    List<T> createAll(List<T> entities);
     boolean create(T user);
     Optional<T> get(ID id);
     boolean edit(ID id, T user);

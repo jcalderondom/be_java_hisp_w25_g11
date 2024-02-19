@@ -1,16 +1,25 @@
 package com.example.be_java_hisp_w25_g11.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Seller extends User {
-    private Set<User> followers;
+public class Seller {
+    private Long id;
+    private String name;
+    private Set<Long> followers;
+    private Set<Long> followed;
     private Set<SellerPost> posts;
-    private Set<Seller> followed;
+
+    public Seller(Long id, String name) {
+        this.id = id;
+        this.name = name;
+        this.followers = new HashSet<>();
+        this.posts = new HashSet<>();
+        this.followed = new HashSet<>();
+    }
 }

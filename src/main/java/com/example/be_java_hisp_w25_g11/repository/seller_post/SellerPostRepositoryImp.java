@@ -20,7 +20,14 @@ public class SellerPostRepositoryImp implements ISellerPostRepository {
     public List<SellerPost> getAll() {
         return sellerPosts
                 .values()
-                .stream().toList();
+                .stream()
+                .toList();
+    }
+
+    @Override
+    public List<SellerPost> createAll(List<SellerPost> entities) {
+        entities.forEach(p -> sellerPosts.put(p.getId(), p));
+        return entities;
     }
 
     @Override
