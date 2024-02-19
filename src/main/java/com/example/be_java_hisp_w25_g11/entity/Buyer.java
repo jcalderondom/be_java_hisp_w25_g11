@@ -13,7 +13,7 @@ import java.util.Set;
 public class Buyer {
     private Long id;
     private String name;
-    private Set<Seller> followed;
+    private Set<Long> followed;
 
     public Buyer(Long id, String name) {
         this.id = id;
