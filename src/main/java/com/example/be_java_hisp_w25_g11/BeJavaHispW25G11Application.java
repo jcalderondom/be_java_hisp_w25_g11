@@ -5,9 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class BeJavaHispW25G11Application {
-
 	public static void main(String[] args) {
 		SpringApplication.run(BeJavaHispW25G11Application.class, args);
 	}
-
 }

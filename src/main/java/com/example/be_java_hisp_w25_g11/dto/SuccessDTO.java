@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SuccessDTO {
-    private Boolean isSuccessful;
+    private String message;
 }

@@ -1,8 +1,8 @@
 package com.example.be_java_hisp_w25_g11.service;
 
-import com.example.be_java_hisp_w25_g11.dto.FollowedDTO;
-import com.example.be_java_hisp_w25_g11.dto.FollowersCountDTO;
-import com.example.be_java_hisp_w25_g11.dto.FollowersDTO;
+import com.example.be_java_hisp_w25_g11.dto.response.FollowedDTO;
+import com.example.be_java_hisp_w25_g11.dto.response.FollowersCountDTO;
+import com.example.be_java_hisp_w25_g11.dto.response.FollowersDTO;
 import com.example.be_java_hisp_w25_g11.dto.SuccessDTO;
 import org.springframework.stereotype.Service;
 

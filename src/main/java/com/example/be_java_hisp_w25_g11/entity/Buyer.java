@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Buyer {
-    private Long id;
-    private String name;
+public class Buyer extends User {
+    private Set<Seller> followed;
 }

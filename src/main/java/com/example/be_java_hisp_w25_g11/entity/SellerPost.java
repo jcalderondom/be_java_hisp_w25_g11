@@ -10,6 +10,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SellerPost {
+    private Long id;
     private Date date;
     private Integer Category;
     private Double price;
