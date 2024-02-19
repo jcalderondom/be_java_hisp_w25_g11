@@ -5,6 +5,7 @@ import com.example.be_java_hisp_w25_g11.dto.response.FollowedDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowerCountDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowerDTO;
 import com.example.be_java_hisp_w25_g11.dto.SuccessDTO;
+import com.example.be_java_hisp_w25_g11.entity.Buyer;
 import com.example.be_java_hisp_w25_g11.entity.Seller;
 import com.example.be_java_hisp_w25_g11.exception.NotFoundException;
 import com.example.be_java_hisp_w25_g11.repository.buyer.BuyerRepositoryImp;
@@ -38,7 +39,15 @@ public class UserServiceImp implements IUserService{
 
     @Override
     public FollowerCountDTO followersSellersCount(Long sellerId) {
-        return null;
+        return new FollowerCountDTO (
+                1L,
+                "test",
+                buyerRepositoryImp.getAll().size()
+        );
+
+    }
+    public List<Buyer> getAll(){
+        return buyerRepositoryImp.getAll();
 
     }
 
@@ -51,9 +60,20 @@ public class UserServiceImp implements IUserService{
 
         List<UserDTO> followers = seller.get().getFollowers()
                 .stream()
-                .map(u -> mapper.map(u, UserDTO.class))
-                .toList();
+                .map(followerId ->{
+                    if (buyerRepositoryImp.existing(followerId)
+                    ) {
 
+                        return buyerRepositoryImp.get(followerId);
+
+                    }
+                    else{
+
+                        return sellerRepositoryImp.get(followerId);
+                    }
+                })
+                .map(u -> {return mapper.map(u.get(), UserDTO.class);})
+                .toList();
         return new FollowerDTO(sellerId,seller.get().getName(),followers);
     }
 

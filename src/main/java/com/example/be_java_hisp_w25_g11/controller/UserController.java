@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@RestController()
 @RequestMapping("/users/{userId}")
 public class UserController {
     private UserServiceImp userService;
@@ -26,17 +26,23 @@ public class UserController {
     ) {
         return new ResponseEntity<>(new SuccessDTO(), HttpStatus.OK);
     }
+    @GetMapping("/test")
+    public ResponseEntity<?> test() {
+        return new ResponseEntity<>(userService.followersSellersCount(1L), HttpStatus.OK);
+    }
 
     @GetMapping("/followers/count")
-    public ResponseEntity<FollowerCountDTO> followersCount(
+    public ResponseEntity<?> followersCount(
         @PathVariable Integer userId
     ) {
-        return new ResponseEntity<>(new FollowerCountDTO(), HttpStatus.OK);
+
+        return new ResponseEntity<>(userService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("/followers/list")
     public ResponseEntity<FollowerDTO>  followersList(
         @PathVariable Long userId
+
     ) {
         return new ResponseEntity<>(userService.buyersFollowSellers(userId), HttpStatus.OK);
     }
