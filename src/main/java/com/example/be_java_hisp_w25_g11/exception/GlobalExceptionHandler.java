@@ -11,7 +11,7 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(ActionNotAllowedException.class)
-    public ResponseEntity<?> notFound(ActionNotAllowedException e){
+    public ResponseEntity<?> actionNotAllowed(ActionNotAllowedException e){
         ExceptionDTO exceptionDTO = new ExceptionDTO(e.getMessage());
         return new ResponseEntity<>(exceptionDTO, HttpStatus.UNAUTHORIZED);
     }
@@ -25,6 +25,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> notFound(BadRequestException e){
         ExceptionDTO exceptionDTO = new ExceptionDTO(e.getMessage());
         return new ResponseEntity<>(exceptionDTO, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotFoundExeption.class)
+    public ResponseEntity<?> actionNotAllowed(NotFoundExeption e){
+        ExceptionDTO exceptionDTO = new ExceptionDTO(e.getMessage());
+        return new ResponseEntity<>(exceptionDTO, HttpStatus.NOT_FOUND);
     }
 
 }
