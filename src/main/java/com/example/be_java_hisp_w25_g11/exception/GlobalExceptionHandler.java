@@ -14,4 +14,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exceptionDTO, HttpStatus.UNAUTHORIZED);
     }
 
+    public ResponseEntity<?> notFound(NotFoundException e){
+        ExceptionDTO exceptionDTO = new ExceptionDTO(e.getMessage());
+        return new ResponseEntity<>(exceptionDTO, HttpStatus.NOT_FOUND);
+    }
+
 }

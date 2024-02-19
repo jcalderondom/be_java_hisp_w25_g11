@@ -5,4 +5,6 @@ import com.example.be_java_hisp_w25_g11.dto.SuccessDTO;
 
 public interface ISellerPostService {
     SuccessDTO createPost(SellerPostDTO sellerPost);
+
+
 }

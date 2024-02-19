@@ -1,9 +1,10 @@
 package com.example.be_java_hisp_w25_g11.controller;
 
 import com.example.be_java_hisp_w25_g11.dto.response.FollowedDTO;
-import com.example.be_java_hisp_w25_g11.dto.response.FollowersCountDTO;
-import com.example.be_java_hisp_w25_g11.dto.response.FollowersDTO;
+import com.example.be_java_hisp_w25_g11.dto.response.FollowerCountDTO;
+import com.example.be_java_hisp_w25_g11.dto.response.FollowerDTO;
 import com.example.be_java_hisp_w25_g11.dto.SuccessDTO;
+import com.example.be_java_hisp_w25_g11.service.UserServiceImp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/users/{userId}")
 public class UserController {
+    private UserServiceImp userService;
+
+    public UserController(UserServiceImp userService) {
+        this.userService = userService;
+    }
 
     @PostMapping("/follow/{userIdToFollow}")
     public ResponseEntity<SuccessDTO> follow(
@@ -21,18 +27,17 @@ public class UserController {
     }
 
     @GetMapping("/followers/count")
-    public ResponseEntity<FollowersCountDTO> followersCount(
+    public ResponseEntity<FollowerCountDTO> followersCount(
         @PathVariable Integer userId
     ) {
-        return new ResponseEntity<>(new FollowersCountDTO(), HttpStatus.OK);
+        return new ResponseEntity<>(new FollowerCountDTO(), HttpStatus.OK);
     }
 
     @GetMapping("/followers/list")
-    public ResponseEntity<FollowersDTO>  followersList(
-        @PathVariable Integer userId,
-        @RequestParam(required = false) String order
+    public ResponseEntity<FollowerDTO>  followersList(
+        @PathVariable Long userId
     ) {
-        return new ResponseEntity<>(new FollowersDTO(), HttpStatus.OK);
+        return new ResponseEntity<>(userService.buyersFollowSellers(userId), HttpStatus.OK);
     }
 
     @GetMapping("/followed/list")
