@@ -13,7 +13,7 @@ public interface IUserService {
     FollowerDTO buyersFollowSellers(Integer sellerId);
     FollowedDTO sellersFollowingByUsers(Integer userId);
     SuccessDTO unfollow(Integer userId, Integer sellerIdToUnfollow);
-        FollowerDTO sortFollowers(OrganizerByNameDTO organizer);
+    FollowerDTO sortFollowers(OrganizerByNameDTO organizer);
     FollowedDTO sortFollowed(OrganizerByNameDTO organizer);
     boolean isSeller(Integer userId);
 }
