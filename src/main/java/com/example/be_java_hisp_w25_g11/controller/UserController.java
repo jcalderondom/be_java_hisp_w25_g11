@@ -24,7 +24,7 @@ public class UserController {
         @PathVariable Integer userId,
         @PathVariable Integer userIdToFollow
     ) {
-        return new ResponseEntity<>(new SuccessDTO(), HttpStatus.OK);
+        return new ResponseEntity<>(userService.follow(userId, userIdToFollow), HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/followers/count")
@@ -53,6 +53,6 @@ public class UserController {
         @PathVariable Integer userId,
         @PathVariable Integer userIdToUnfollow
     ) {
-        return new ResponseEntity<>(new SuccessDTO(), HttpStatus.OK);
+        return new ResponseEntity<>(userService.unfollow(userId, userIdToUnfollow), HttpStatus.OK);
     }
 }

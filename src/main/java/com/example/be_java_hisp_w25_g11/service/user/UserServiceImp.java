@@ -51,7 +51,7 @@ public class UserServiceImp implements IUserService {
         Object userToFollow = getUser(userIdToFollow);
 
         if (!(userToFollow instanceof Seller)) {
-            throw new BadRequestException("El comprador a seguir debe ser un vendedor.");
+            throw new BadRequestException("El usuario a seguir debe ser un vendedor.");
         }
 
         if (user instanceof Buyer) {
@@ -117,6 +117,10 @@ public class UserServiceImp implements IUserService {
     public SuccessDTO unfollow(Integer userId, Integer sellerIdToUnfollow) {
         Object user = getUser(userId);
         Object userToUnfollow = getUser(sellerIdToUnfollow);
+
+        if (!(userToUnfollow instanceof Seller)) {
+            throw new BadRequestException("El usuario a dejar de seguir debe ser un vendedor.");
+        }
 
         if (user instanceof Buyer) {
             if (!((Buyer) user).getFollowed().contains(sellerIdToUnfollow)) {
