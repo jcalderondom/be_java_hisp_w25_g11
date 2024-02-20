@@ -1,10 +1,10 @@
-package com.example.be_java_hisp_w25_g11.service;
+package com.example.be_java_hisp_w25_g11.service.user;
 
 import com.example.be_java_hisp_w25_g11.dto.UserDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowedDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowerCountDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowerDTO;
-import com.example.be_java_hisp_w25_g11.dto.SuccessDTO;
+import com.example.be_java_hisp_w25_g11.dto.response.SuccessDTO;
 import com.example.be_java_hisp_w25_g11.entity.Buyer;
 import com.example.be_java_hisp_w25_g11.entity.Seller;
 import com.example.be_java_hisp_w25_g11.exception.BadRequestException;
@@ -23,19 +23,19 @@ import java.util.stream.Stream;
 public class UserServiceImp implements IUserService {
     private final IBuyerRepository buyerRepository;
     private final ISellerRepository sellerRepository;
-    private final ModelMapper mapper;
+    private final ModelMapper modelMapper;
 
     public UserServiceImp(
         IBuyerRepository buyerRepository,
         ISellerRepository sellerRepository,
-        ModelMapper mapper
+        ModelMapper modelMapper
     ) {
         this.buyerRepository = buyerRepository;
         this.sellerRepository = sellerRepository;
-        this.mapper = mapper;
+        this.modelMapper = modelMapper;
     }
 
-    private Object getUser(Long id) {
+    private Object getUser(Integer id) {
         if (buyerRepository.existing(id)) {
             return buyerRepository.get(id).get();
         } else if (sellerRepository.existing(id)) {
@@ -46,7 +46,7 @@ public class UserServiceImp implements IUserService {
     }
 
     @Override
-    public SuccessDTO follow(Long userId, Long userIdToFollow) {
+    public SuccessDTO follow(Integer userId, Integer userIdToFollow) {
         Object user = getUser(userId);
         Object userToFollow = getUser(userIdToFollow);
 
@@ -73,9 +73,9 @@ public class UserServiceImp implements IUserService {
     }
 
     @Override
-    public FollowerCountDTO followersSellersCount(Long sellerId) {
+    public FollowerCountDTO followersSellersCount(Integer sellerId) {
         return new FollowerCountDTO (
-                1L,
+                1,
                 "test",
                 buyerRepository.getAll().size()
         );
@@ -83,7 +83,7 @@ public class UserServiceImp implements IUserService {
     }
 
     @Override
-    public FollowerDTO buyersFollowSellers(Long sellerId) {
+    public FollowerDTO buyersFollowSellers(Integer sellerId) {
         Optional<Seller> seller = sellerRepository.get(sellerId);
         if(seller.isEmpty()){
             throw new NotFoundException("Buyer does not exists");
@@ -103,18 +103,18 @@ public class UserServiceImp implements IUserService {
                         return sellerRepository.get(followerId);
                     }
                 })
-                .map(u -> {return mapper.map(u.get(), UserDTO.class);})
+                .map(u -> {return modelMapper.map(u.get(), UserDTO.class);})
                 .toList();
         return new FollowerDTO(sellerId,seller.get().getName(),followers);
     }
 
     @Override
-    public FollowedDTO sellersFollowingByUsers(Long userId) {
+    public FollowedDTO sellersFollowingByUsers(Integer userId) {
         return null;
     }
 
     @Override
-    public SuccessDTO unfollow(Long userId, Long sellerIdToUnfollow) {
+    public SuccessDTO unfollow(Integer userId, Integer sellerIdToUnfollow) {
         Object user = getUser(userId);
         Object userToUnfollow = getUser(sellerIdToUnfollow);
 
@@ -137,12 +137,12 @@ public class UserServiceImp implements IUserService {
     }
 
     @Override
-    public FollowerDTO sortFollowers(Long id,String order) {
+    public FollowerDTO sortFollowers(Integer id,String order) {
         return null;
     }
 
     @Override
-    public FollowedDTO sortFollowed(Long id,String order) {
+    public FollowedDTO sortFollowed(Integer id,String order) {
         if(this.sellerRepository.get(id).isEmpty()){
             throw new NotFoundException(String.format("User with Id "+id+" Not found"));
         }
@@ -167,7 +167,7 @@ public class UserServiceImp implements IUserService {
     }
 
     @Override
-    public boolean isSeller(Long userId) {
+    public boolean isSeller(Integer userId) {
         return false;
     }
 }

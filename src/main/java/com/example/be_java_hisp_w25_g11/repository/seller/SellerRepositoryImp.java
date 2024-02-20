@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public class SellerRepositoryImp implements ISellerRepository {
-    private final Map<Long, Seller> sellers;
+    private final Map<Integer, Seller> sellers;
 
     public SellerRepositoryImp() {
         this.sellers = new HashMap<>();
@@ -31,22 +31,19 @@ public class SellerRepositoryImp implements ISellerRepository {
     }
 
     @Override
-    public boolean create(Seller user) {
-        if (existing(user.getId())){
-            return false;
-        }
-
+    public Seller create(Seller user) {
         this.sellers.put(user.getId(), user);
-        return true;
+
+        return user;
     }
 
     @Override
-    public Optional<Seller> get(Long id) {
+    public Optional<Seller> get(Integer id) {
         return Optional.ofNullable(sellers.get(id));
     }
 
     @Override
-    public boolean edit(Long id, Seller seller) {
+    public boolean update(Integer id, Seller seller) {
         if (get(id).isEmpty()) {
             return false;
         }
@@ -56,12 +53,12 @@ public class SellerRepositoryImp implements ISellerRepository {
     }
 
     @Override
-    public boolean delete(Long id) {
+    public boolean delete(Integer id) {
         return sellers.remove(id) != null;
     }
 
     @Override
-    public boolean existing(Long id) {
+    public boolean existing(Integer id) {
         return sellers.containsKey(id);
     }
 }
