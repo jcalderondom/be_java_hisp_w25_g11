@@ -20,6 +20,8 @@ import java.util.Optional;
 
 import java.util.Comparator;
 import java.util.Set;
+import java.util.stream.Stream;
+
 
 @Service
 public class UserServiceImp implements IUserService {
@@ -176,6 +178,7 @@ public class UserServiceImp implements IUserService {
     private boolean isThisIdInSellerOrBuyerRepositories(Integer userId){
         return  this.buyerRepository.get(userId).isPresent() || this.sellerRepository.get(userId).isPresent();
     }
+
     @Override
     public boolean isSeller(Integer userId) {
         return false;
