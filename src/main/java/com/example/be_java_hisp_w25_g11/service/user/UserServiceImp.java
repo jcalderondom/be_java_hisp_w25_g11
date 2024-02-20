@@ -97,12 +97,10 @@ public class UserServiceImp implements IUserService {
                 .map(followerId ->{
                     if (buyerRepository.existing(followerId)
                     ) {
-
                         return buyerRepository.get(followerId);
 
                     }
                     else{
-
                         return sellerRepository.get(followerId);
                     }
                 })
