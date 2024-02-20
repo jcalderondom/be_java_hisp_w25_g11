@@ -124,6 +124,10 @@ public class DataModeler {
                 users.get(2).getId(),
                 users.get(4).getId()
         )));
+        sellers.get(0).setFollowed(new HashSet<>(List.of(
+                sellers.get(1).getId(),
+                sellers.get(2).getId()
+        )));
 
         // Add everything to repositories
         userRepository.createAll(users);

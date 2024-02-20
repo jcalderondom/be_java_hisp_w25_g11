@@ -18,11 +18,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<?> test() {
-        return new ResponseEntity<>(userService.followersSellersCount(1L), HttpStatus.OK);
-    }
-
     @PostMapping("/follow/{userIdToFollow}")
     public ResponseEntity<SuccessDTO> follow(
         @PathVariable Integer userId,
@@ -48,10 +43,10 @@ public class UserController {
 
     @GetMapping("/followed/list")
     public ResponseEntity<FollowedDTO> followedList(
-        @PathVariable Integer userId,
+        @PathVariable Long userId,
         @RequestParam(required = false) String order
     ) {
-        return new ResponseEntity<>(new FollowedDTO(), HttpStatus.OK);
+        return new ResponseEntity<>(userService.sellersFollowingByUsers(userId), HttpStatus.OK);
     }
 
     @PostMapping("/unfollow/{userIdToUnfollow}")
@@ -61,4 +56,6 @@ public class UserController {
     ) {
         return new ResponseEntity<>(new SuccessDTO(), HttpStatus.OK);
     }
+
+
 }
