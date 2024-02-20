@@ -56,13 +56,13 @@ public class UserServiceImp implements IUserService {
 
         if (user instanceof Buyer) {
             if (((Buyer) user).getFollowed().contains(userIdToFollow)) {
-                throw new BadRequestException("El comprador con id="+userId+" ya sigue al vendedor con id"+userToFollow+".");
+                throw new BadRequestException("El comprador con id="+userId+" ya sigue al vendedor con id="+userIdToFollow+".");
             }
             ((Buyer) user).getFollowed().add(userIdToFollow);
             ((Seller) userToFollow).getFollowers().add(userId);
         } else if (user instanceof Seller) {
             if (((Seller) user).getFollowed().contains(userIdToFollow)) {
-                throw new BadRequestException("El vendedor con id="+userId+" ya sigue al vendedor con id"+userToFollow+".");
+                throw new BadRequestException("El vendedor con id="+userId+" ya sigue al vendedor con id="+userIdToFollow+".");
             }
             ((Seller) user).getFollowed().add(userIdToFollow);
             ((Seller) userToFollow).getFollowers().add(userId);
@@ -124,13 +124,13 @@ public class UserServiceImp implements IUserService {
 
         if (user instanceof Buyer) {
             if (!((Buyer) user).getFollowed().contains(sellerIdToUnfollow)) {
-                throw new BadRequestException("El comprador con id="+userId+" no sigue al vendedor con id"+userToUnfollow+".");
+                throw new BadRequestException("El comprador con id="+userId+" no sigue al vendedor con id"+sellerIdToUnfollow+".");
             }
             ((Buyer) user).getFollowed().remove(sellerIdToUnfollow);
             ((Seller) userToUnfollow).getFollowers().remove(userId);
         } else if (user instanceof Seller) {
             if (!((Seller) user).getFollowed().contains(sellerIdToUnfollow)) {
-                throw new BadRequestException("El vendedor con id="+userId+" no sigue al vendedor con id"+userToUnfollow+".");
+                throw new BadRequestException("El vendedor con id="+userId+" no sigue al vendedor con id"+sellerIdToUnfollow+".");
             }
             ((Seller) user).getFollowed().remove(sellerIdToUnfollow);
             ((Seller) userToUnfollow).getFollowers().remove(userId);
