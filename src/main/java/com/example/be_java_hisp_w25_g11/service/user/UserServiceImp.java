@@ -1,6 +1,8 @@
 package com.example.be_java_hisp_w25_g11.service.user;
 
 import com.example.be_java_hisp_w25_g11.dto.UserDTO;
+import com.example.be_java_hisp_w25_g11.dto.commons.enums.EnumNameOrganizer;
+import com.example.be_java_hisp_w25_g11.dto.request.OrganizerByNameDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowedDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowerCountDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowerDTO;
@@ -17,7 +19,9 @@ import java.util.List;
 import java.util.Optional;
 
 import java.util.Comparator;
+import java.util.Set;
 import java.util.stream.Stream;
+
 
 @Service
 public class UserServiceImp implements IUserService {
@@ -138,33 +142,42 @@ public class UserServiceImp implements IUserService {
     }
 
     @Override
-    public FollowerDTO sortFollowers(Integer id,String order) {
-        return null;
+    public FollowerDTO sortFollowers(OrganizerByNameDTO organizer) {
+        if(this.sellerRepository.get(organizer.getUserId()).isEmpty()){
+            throw new NotFoundException(String.format("User with Id "+organizer.getUserId()+" Not found"));
+        }
+        Seller seller = this.sellerRepository.get(organizer.getUserId()).get();
+        return new FollowerDTO(organizer.getUserId(),seller.getName(),this.getSortedUsers(seller.getFollowers(),organizer.getOrder()));
     }
 
     @Override
-    public FollowedDTO sortFollowed(Integer id,String order) {
-        if(this.sellerRepository.get(id).isEmpty()){
-            throw new NotFoundException(String.format("User with Id "+id+" Not found"));
+    public FollowedDTO sortFollowed(OrganizerByNameDTO organizer) {
+        if(this.sellerRepository.get(organizer.getUserId()).isEmpty()){
+            throw new NotFoundException(String.format("User with Id "+organizer.getUserId()+" Not found"));
         }
-        Seller seller = this.sellerRepository.get(id).get();
-        Stream<UserDTO> users = seller.getFollowed().stream()
-                //Filtramos para asegurarnos de que él id del usuario a mostrar sea un usuario existente como cliente o como vendedor
-                .filter(sellerId -> this.buyerRepository.get(sellerId).isPresent() || this.sellerRepository.get(sellerId).isPresent())
-                .map(sellerId ->{
-                    if(this.sellerRepository.get(sellerId).isPresent()){
-                        Seller lambdaSeller = this.sellerRepository.get(sellerId).get();
-                        return new UserDTO(lambdaSeller.getId(),lambdaSeller.getName());
-                    }
-                    Buyer lambdaBuyer = this.buyerRepository.get(sellerId).get();
-                    return new UserDTO(lambdaBuyer.getId(),lambdaBuyer.getName());
-                });
-        return new FollowedDTO(id,seller.getName(),
-                order.equals("name_asc")
-                        ? users.sorted(Comparator.comparing(UserDTO::getName)).toList()
-                        : order.equals("name_desc")
-                        ? users.sorted(Comparator.comparing(UserDTO::getName).reversed()).toList()
-                        : users.toList());
+        Seller seller = this.sellerRepository.get(organizer.getUserId()).get();
+        return new FollowedDTO(organizer.getUserId(),seller.getName(),this.getSortedUsers(seller.getFollowed(),organizer.getOrder()));
+    }
+
+    private List<UserDTO> getSortedUsers(Set<Integer> usersId, EnumNameOrganizer organizer){
+        return usersId.stream()
+                .filter(this::isThisIdInSellerOrBuyerRepositories)
+                .map(this::mapBuyersAndSeyersToUserDTO)
+                .sorted(Comparator.comparing(UserDTO::getName,organizer.getComparator())).toList();
+    }
+
+    private UserDTO mapBuyersAndSeyersToUserDTO(Integer sellerId){
+        if(this.sellerRepository.get(sellerId).isPresent()){
+            Seller lambdaSeller = this.sellerRepository.get(sellerId).get();
+            return new UserDTO(lambdaSeller.getId(),lambdaSeller.getName());
+        }
+        Buyer lambdaBuyer = this.buyerRepository.get(sellerId).get();
+        return new UserDTO(lambdaBuyer.getId(),lambdaBuyer.getName());
+    }
+
+    //Filtramos para asegurarnos de que él id del usuario a mostrar sea un usuario existente como cliente o como vendedor
+    private boolean isThisIdInSellerOrBuyerRepositories(Integer userId){
+        return  this.buyerRepository.get(userId).isPresent() || this.sellerRepository.get(userId).isPresent();
     }
 
     @Override
