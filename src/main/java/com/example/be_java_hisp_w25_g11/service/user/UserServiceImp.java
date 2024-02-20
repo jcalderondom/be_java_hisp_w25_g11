@@ -2,11 +2,7 @@ package com.example.be_java_hisp_w25_g11.service.user;
 
 import com.example.be_java_hisp_w25_g11.dto.UserDTO;
 import com.example.be_java_hisp_w25_g11.dto.commons.enums.EnumNameOrganizer;
-import com.example.be_java_hisp_w25_g11.dto.request.OrganizerByNameDTO;
-import com.example.be_java_hisp_w25_g11.dto.response.FollowedDTO;
-import com.example.be_java_hisp_w25_g11.dto.response.FollowerCountDTO;
-import com.example.be_java_hisp_w25_g11.dto.response.FollowerDTO;
-import com.example.be_java_hisp_w25_g11.dto.response.SuccessDTO;
+import com.example.be_java_hisp_w25_g11.dto.response.*;
 import com.example.be_java_hisp_w25_g11.entity.Buyer;
 import com.example.be_java_hisp_w25_g11.entity.Seller;
 import com.example.be_java_hisp_w25_g11.exception.BadRequestException;
@@ -17,8 +13,6 @@ import com.example.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-
-import java.util.stream.Stream;
 
 
 @Service
@@ -112,47 +106,39 @@ public class UserServiceImp implements IUserService {
                         return sellerRepository.get(followerId);
                     }
                 })
-                .map(u -> {return modelMapper.map(u.get(), UserDTO.class);})
+                .map(u -> modelMapper.map(u.get(), UserDTO.class))
                 .toList();
         return new FollowerDTO(sellerId,seller.get().getName(),followers);
     }
 
-    @Override
-    public FollowedDTO sellersFollowingByUsers(Integer userId) {
-        Set<Integer> followedBySeller;
-        Set<Integer> followedByBuyer;
-        List<UserDTO> userDTOList = null;
-        String name;
-        if (sellerRepository.existing(userId)) {
-            name = sellerRepository.get(userId).get().getName();
-            Seller sellerResult = sellerRepository.getAll().stream()
-                    .filter(seller -> seller.getId().equals(userId))
-                    .findFirst().orElse(null);
-            followedBySeller = sellerResult != null ? sellerResult.getFollowed() : null;
-            List<Seller> sellerList = new ArrayList<>();
-            if (followedBySeller != null) {
-                for (Integer sellerFind : followedBySeller) {
-                    sellerList.addAll(sellerRepository.getAll().stream()
-                            .filter(seller -> seller.getId().equals(sellerFind))
-                            .toList());
-                    userDTOList = sellerList.stream()
-                            .map(seller -> modelMapper.map(seller, UserDTO.class))
-                            .toList();
-                }
-            }
-        } else if (buyerRepository.existing(userId)) {
-            name = buyerRepository.get(userId).get().getName();
-            Buyer buyerResult = buyerRepository.getAll().stream()
-                    .filter(seller -> seller.getId().equals(userId))
-                    .findFirst().orElse(null);
-            followedByBuyer = buyerResult != null ? buyerResult.getFollowed() : null;
-            userDTOList = followedByBuyer.stream()
-                    .map(buyerId -> modelMapper.map(buyerRepository.get(buyerId).get(),UserDTO.class))
-                    .toList();
+    private List<UserDTO> getSocialUsersList(Integer userId, String type) {
+        Optional<Buyer> buyerOptional = buyerRepository.get(userId);
+        Optional<Seller> sellerOptional = sellerRepository.get(userId);
+        if (buyerOptional.isPresent()) {
+            return getSocialListHelper(buyerOptional.get().getFollowed());
+        } else if (sellerOptional.isPresent()) {
+            return type.equalsIgnoreCase("followers")
+                    ? getSocialListHelper(sellerOptional.get().getFollowers())
+                    : getSocialListHelper(sellerOptional.get().getFollowed());
         } else {
-            throw new NotFoundException("El usuario con id="+userId+" no existe.");
+            throw new NotFoundException("No se encontró un usuario con ese ID");
         }
-        return new FollowedDTO(userId, name, userDTOList);
+    }
+
+    private List<UserDTO> getSocialListHelper(Set<Integer> output) {
+        return output
+                .stream()
+                .map(v -> {
+                    Optional<Buyer> buyer = buyerRepository.get(v);
+                    Optional<Seller> seller = sellerRepository.get(v);
+                    if (buyer.isPresent())
+                        return modelMapper.map(buyer.get(), UserDTO.class);
+                    else if (seller.isPresent())
+                        return modelMapper.map(seller.get(), UserDTO.class);
+                    else
+                        throw new NotFoundException("No se encontró uno de los IDs");
+                })
+                .toList();
     }
 
     @Override
@@ -183,21 +169,79 @@ public class UserServiceImp implements IUserService {
     }
 
     @Override
-    public FollowerDTO sortFollowers(OrganizerByNameDTO organizer) {
-        if(this.sellerRepository.get(organizer.getUserId()).isEmpty()){
-            throw new NotFoundException(String.format("User with Id "+organizer.getUserId()+" Not found"));
+    public FollowerDTO sortFollowers(Integer userId, String order) {
+        Optional<Seller> seller = sellerRepository.get(userId);
+        Optional<Buyer> buyer = buyerRepository.get(userId);
+        String name;
+        if (buyer.isPresent())
+            throw new NotFoundException("Los compradores no pueden tener seguidores");
+        else if (seller.isPresent())
+            name = seller.get().getName();
+        else
+            throw new NotFoundException("No se encontró un vendedor con ese ID");
+
+        List<UserDTO> users = this.getSocialUsersList(userId, "followers");
+
+        if (order == null) {
+            return new FollowerDTO(
+                    userId,
+                    name,
+                    users
+            );
         }
-        Seller seller = this.sellerRepository.get(organizer.getUserId()).get();
-        return new FollowerDTO(organizer.getUserId(),seller.getName(),this.getSortedUsers(seller.getFollowers(),organizer.getOrder()));
+
+        Comparator<UserDTO> comparator = switch (order.toLowerCase()) {
+            case "name_asc" -> Comparator.comparing(UserDTO::getName);
+            case "name_desc" -> Comparator.comparing(UserDTO::getName).reversed();
+            default -> throw new BadRequestException("Argumento invalido (order debe ser NAME_ASC o NAME_DESC)");
+        };
+
+        return new FollowerDTO(
+                userId,
+                name,
+                users
+                        .stream()
+                        .sorted(comparator)
+                        .toList()
+        );
     }
 
     @Override
-    public FollowedDTO sortFollowed(OrganizerByNameDTO organizer) {
-        if(this.sellerRepository.get(organizer.getUserId()).isEmpty()){
-            throw new NotFoundException(String.format("User with Id "+organizer.getUserId()+" Not found"));
+    public FollowedDTO sortFollowed(Integer userId, String order) {
+        Optional<Buyer> buyer = buyerRepository.get(userId);
+        Optional<Seller> seller = sellerRepository.get(userId);
+        String name;
+        if (buyer.isPresent())
+            name = buyer.get().getName();
+        else if (seller.isPresent())
+            name = seller.get().getName();
+        else
+            throw new NotFoundException("No se encontró un usuario con ese ID");
+
+        List<UserDTO> users = this.getSocialUsersList(userId, "followed");
+
+        if (order == null) {
+            return new FollowedDTO(
+                    userId,
+                    name,
+                    users
+            );
         }
-        Seller seller = this.sellerRepository.get(organizer.getUserId()).get();
-        return new FollowedDTO(organizer.getUserId(),seller.getName(),this.getSortedUsers(seller.getFollowed(),organizer.getOrder()));
+
+        Comparator<UserDTO> comparator = switch (order.toLowerCase()) {
+            case "name_asc" -> Comparator.comparing(UserDTO::getName);
+            case "name_desc" -> Comparator.comparing(UserDTO::getName).reversed();
+            default -> throw new BadRequestException("Argumento invalido (order debe ser NAME_ASC o NAME_DESC)");
+        };
+
+        return new FollowedDTO(
+                userId,
+                name,
+                users
+                        .stream()
+                        .sorted(comparator)
+                        .toList()
+        );
     }
 
     private List<UserDTO> getSortedUsers(Set<Integer> usersId, EnumNameOrganizer organizer){

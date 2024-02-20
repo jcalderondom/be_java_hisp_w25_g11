@@ -17,7 +17,7 @@ public class SellerPostDTO {
     @JsonProperty("post_id")
     private int postId;
     @JsonProperty("date")
-    private LocalDate date;
+    private String date;
     @JsonProperty("product")
     private ProductDTO product;
     @JsonProperty("category")

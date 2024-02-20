@@ -29,6 +29,6 @@ public class SellerPostController {
             @PathVariable Integer userId,
             @RequestParam(required = false) String order
     ) {
-        return new ResponseEntity<>(sellerPostService.getFollowedSellersLatestPosts(userId), HttpStatus.OK);
+        return new ResponseEntity<>(sellerPostService.getFollowedSellersLatestPosts(userId, order), HttpStatus.OK);
     }
 }

@@ -1,7 +1,9 @@
 package com.example.be_java_hisp_w25_g11.service.seller_post;
 
 import com.example.be_java_hisp_w25_g11.dto.SellerPostDTO;
+import com.example.be_java_hisp_w25_g11.dto.commons.enums.EnumDateOrganizer;
 import com.example.be_java_hisp_w25_g11.dto.request.CreatePostRequestDTO;
+import com.example.be_java_hisp_w25_g11.dto.request.OrganizerByDateDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.SellerPostsListDTO;
 import com.example.be_java_hisp_w25_g11.entity.Buyer;
 import com.example.be_java_hisp_w25_g11.entity.Product;
@@ -15,6 +17,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -24,7 +27,7 @@ public class SellerPostServiceImp implements ISellerPostService {
     private final ISellerRepository sellerRepository;
     private final ModelMapper modelMapper;
 
-    public SellerPostServiceImp (
+    public SellerPostServiceImp(
             ISellerPostRepository sellerPostRepository,
             IBuyerRepository buyerRepository,
             ISellerRepository sellerRepository,
@@ -42,10 +45,11 @@ public class SellerPostServiceImp implements ISellerPostService {
         if (seller.isEmpty())
             throw new NotFoundException("No existe un vendedor con ese ID");
 
-        SellerPost sellerPost = new SellerPost (
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ENGLISH);
+        SellerPost sellerPost = new SellerPost(
                 request.getUserId(),
                 null,
-                request.getDate(),
+                LocalDate.parse(request.getDate(), dateTimeFormatter),
                 modelMapper.map(request.getProduct(), Product.class),
                 request.getCategory(),
                 request.getPrice(),
@@ -59,23 +63,36 @@ public class SellerPostServiceImp implements ISellerPostService {
     }
 
     @Override
-    public SellerPostsListDTO getFollowedSellersLatestPosts(Integer userId) {
-        List<SellerPost> posts = new ArrayList<>();
+    public SellerPostsListDTO getFollowedSellersLatestPosts(Integer userId, String order) {
+        List<SellerPost> posts;
 
         Optional<Buyer> buyer = buyerRepository.get(userId);
+        Optional<Seller> seller = sellerRepository.get(userId);
         if (buyer.isPresent())
             posts = getMergedPostsList(buyer.get().getFollowed());
-
-
-        Optional<Seller> seller = sellerRepository.get(userId);
-        if (seller.isPresent())
+        else if (seller.isPresent())
             posts = getMergedPostsList(seller.get().getFollowed());
+        else throw new NotFoundException(String.format("No se encontró un usuario con el id %d", userId));
+
+        if (order == null) {
+            return new SellerPostsListDTO(
+                    userId,
+                    posts
+                            .stream()
+                            .map(v -> modelMapper.map(v, SellerPostDTO.class))
+                            .toList()
+            );
+        }
+
+        Comparator<SellerPost> comparator = order.equalsIgnoreCase("DATE_ASC") ?
+                Comparator.comparing(SellerPost::getDate) : Comparator.comparing(SellerPost::getDate).reversed();
 
         return new SellerPostsListDTO(
                 userId,
                 posts
                         .stream()
-                        .map(v -> modelMapper.map(v, SellerPostDTO.class))
+                        .sorted(comparator)
+                        .map(p -> modelMapper.map(p, SellerPostDTO.class))
                         .toList()
         );
     }
@@ -100,5 +117,9 @@ public class SellerPostServiceImp implements ISellerPostService {
                 .toList();
 
         return posts;
+    }
+
+    private boolean compareDate(LocalDate a, LocalDate b) {
+        return a.isAfter(b);
     }
 }
