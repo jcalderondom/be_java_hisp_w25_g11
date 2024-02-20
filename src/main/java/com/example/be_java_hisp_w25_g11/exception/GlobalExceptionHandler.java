@@ -8,15 +8,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
     @ExceptionHandler(ActionNotAllowedException.class)
-    public ResponseEntity<?> notFound(ActionNotAllowedException e){
+    public ResponseEntity<?> actionNotAllowed(ActionNotAllowedException e){
         ExceptionDTO exceptionDTO = new ExceptionDTO(e.getMessage());
         return new ResponseEntity<>(exceptionDTO, HttpStatus.UNAUTHORIZED);
     }
-
+    @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<?> notFound(NotFoundException e){
         ExceptionDTO exceptionDTO = new ExceptionDTO(e.getMessage());
         return new ResponseEntity<>(exceptionDTO, HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<?> badRequest(BadRequestException e){
+        ExceptionDTO exceptionDTO = new ExceptionDTO(e.getMessage());
+        return new ResponseEntity<>(exceptionDTO, HttpStatus.BAD_REQUEST);
     }
 
 }

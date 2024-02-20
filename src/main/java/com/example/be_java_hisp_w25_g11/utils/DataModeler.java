@@ -75,24 +75,24 @@ public class DataModeler {
 
         // Set followed
         users.get(0).setFollowed(new HashSet<>(List.of(
-                sellers.get(0),
-                sellers.get(1),
-                sellers.get(2)
+                sellers.get(0).getId(),
+                sellers.get(1).getId(),
+                sellers.get(2).getId()
         )));
 
         users.get(1).setFollowed(new HashSet<>(List.of(
-                sellers.get(0),
-                sellers.get(2)
+                sellers.get(0).getId(),
+                sellers.get(2).getId()
         )));
 
         users.get(2).setFollowed(new HashSet<>(List.of(
-                sellers.get(1),
-                sellers.get(2),
-                sellers.get(3)
+                sellers.get(1).getId(),
+                sellers.get(2).getId(),
+                sellers.get(3).getId()
         )));
 
         users.get(4).setFollowed(new HashSet<>(List.of(
-                sellers.get(3)
+                sellers.get(3).getId()
         )));
 
         sellers.get(3).setFollowed(new HashSet<>(List.of(
