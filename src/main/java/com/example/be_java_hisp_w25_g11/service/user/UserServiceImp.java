@@ -91,6 +91,9 @@ public class UserServiceImp implements IUserService {
     public FollowerDTO buyersFollowSellers(Integer sellerId) {
         Optional<Seller> seller = sellerRepository.get(sellerId);
         if(seller.isEmpty()){
+            if(buyerRepository.get(sellerId).isPresent()){
+                throw new BadRequestException("Buyer does not have followers");
+            }
             throw new NotFoundException("Buyer does not exists");
         }
 
@@ -99,12 +102,10 @@ public class UserServiceImp implements IUserService {
                 .map(followerId ->{
                     if (buyerRepository.existing(followerId)
                     ) {
-
                         return buyerRepository.get(followerId);
 
                     }
                     else{
-
                         return sellerRepository.get(followerId);
                     }
                 })
