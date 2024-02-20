@@ -73,7 +73,7 @@ public class DataModeler {
         sellers.get(2).getPosts().add(posts.get(3));
         sellers.get(3).getPosts().add(posts.get(4));
 
-        // Set followings
+        // Set followed
         users.get(0).setFollowed(new HashSet<>(List.of(
                 sellers.get(0),
                 sellers.get(1),

@@ -1,8 +1,8 @@
 package com.example.be_java_hisp_w25_g11.service;
 
 import com.example.be_java_hisp_w25_g11.dto.response.FollowedDTO;
-import com.example.be_java_hisp_w25_g11.dto.response.FollowersCountDTO;
-import com.example.be_java_hisp_w25_g11.dto.response.FollowersDTO;
+import com.example.be_java_hisp_w25_g11.dto.response.FollowerCountDTO;
+import com.example.be_java_hisp_w25_g11.dto.response.FollowerDTO;
 import com.example.be_java_hisp_w25_g11.dto.SuccessDTO;
 
 public interface IUserService {
@@ -11,7 +11,7 @@ public interface IUserService {
     FollowersDTO buyersFollowSellers(Long sellerId);
     FollowedDTO sellersFollowingByUsers(Long userId);
     SuccessDTO unfollow(Long userId, Long sellerIdToUnfollow);
-    FollowersDTO sortFollowers(String order);
+    FollowerDTO sortFollowers(String order);
     FollowedDTO sortFollowed(String order);
     boolean isSeller(Long userId);
 }
