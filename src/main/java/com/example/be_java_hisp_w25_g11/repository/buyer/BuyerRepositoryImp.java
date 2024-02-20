@@ -7,7 +7,7 @@ import java.util.*;
 
 @Repository
 public class BuyerRepositoryImp implements IBuyerRepository {
-    private final Map<Long, Buyer> buyers;
+    private final Map<Integer, Buyer> buyers;
 
     public BuyerRepositoryImp() {
         this.buyers = new HashMap<>();
@@ -26,22 +26,19 @@ public class BuyerRepositoryImp implements IBuyerRepository {
         return entities;    }
 
     @Override
-    public boolean create(Buyer user) {
-        if (existing(user.getId())){
-            return false;
-        }
+    public Buyer create(Buyer buyer) {
+        this.buyers.put(buyer.getId(), buyer);
 
-        this.buyers.put(user.getId(), user);
-        return true;
+        return buyer;
     }
 
     @Override
-    public Optional<Buyer> get(Long id) {
+    public Optional<Buyer> get(Integer id) {
         return Optional.ofNullable(buyers.get(id));
     }
 
     @Override
-    public boolean edit(Long id, Buyer buyer) {
+    public boolean update(Integer id, Buyer buyer) {
         if (get(id).isEmpty()) {
             return false;
         }
@@ -51,12 +48,12 @@ public class BuyerRepositoryImp implements IBuyerRepository {
     }
 
     @Override
-    public boolean delete(Long id) {
+    public boolean delete(Integer id) {
         return buyers.remove(id) != null;
     }
 
     @Override
-    public boolean existing(Long id) {
+    public boolean existing(Integer id) {
         return buyers.containsKey(id);
     }
 }

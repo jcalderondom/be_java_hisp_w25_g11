@@ -9,13 +9,16 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Seller {
-    private Long id;
+    private Integer id;
     private String name;
-    private Set<Long> followers;
-    private Set<Long> followed;
+    private Set<Integer> followers;
+    private Set<Integer> followed;
     private Set<SellerPost> posts;
 
-    public Seller(Long id, String name) {
+    public Seller (
+            Integer id,
+            String name
+    ) {
         this.id = id;
         this.name = name;
         this.followers = new HashSet<>();

@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FollowedDTO {
-    private Long id;
+    private Integer id;
     private String name;
     private List<UserDTO> followed;
 }
