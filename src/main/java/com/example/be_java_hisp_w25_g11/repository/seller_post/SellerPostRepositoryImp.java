@@ -1,6 +1,5 @@
 package com.example.be_java_hisp_w25_g11.repository.seller_post;
 
-import com.example.be_java_hisp_w25_g11.entity.Seller;
 import com.example.be_java_hisp_w25_g11.entity.SellerPost;
 import org.springframework.stereotype.Repository;
 
@@ -8,12 +7,11 @@ import java.util.*;
 
 @Repository
 public class SellerPostRepositoryImp implements ISellerPostRepository {
-    private final Map<Long,SellerPost> sellerPosts;
-    private final Map<Long,SellerPost> products;
+    private final Map<Integer,SellerPost> sellerPosts;
+    private Integer index = 0;
 
     public SellerPostRepositoryImp() {
         this.sellerPosts = new HashMap<>();
-        this.products = new HashMap<>();
     }
 
     @Override
@@ -26,28 +24,26 @@ public class SellerPostRepositoryImp implements ISellerPostRepository {
 
     @Override
     public List<SellerPost> createAll(List<SellerPost> entities) {
-        entities.forEach(p -> sellerPosts.put(p.getId(), p));
+        entities.forEach(p -> sellerPosts.put(p.getPostId(), p));
+
         return entities;
     }
 
     @Override
-    public boolean create(SellerPost sellerPost) {
-        if (existing(sellerPost.getId())) {
-            return false;
-        }
-        this.sellerPosts.put(sellerPost.getId(), sellerPost);
-        return true;
+    public SellerPost create(SellerPost sellerPost) {
+        sellerPost.setPostId(index++);
+        sellerPosts.put(sellerPost.getPostId(), sellerPost);
 
+        return sellerPost;
     }
 
     @Override
-    public Optional<SellerPost> get(Long id) {
+    public Optional<SellerPost> get(Integer id) {
         return Optional.ofNullable(sellerPosts.get(id));
-
     }
 
     @Override
-    public boolean edit(Long id, SellerPost sellerPost) {
+    public boolean update(Integer id, SellerPost sellerPost) {
         if (get(id).isEmpty()) {
             return false;
         }
@@ -57,12 +53,12 @@ public class SellerPostRepositoryImp implements ISellerPostRepository {
     }
 
     @Override
-    public boolean delete(Long id) {
+    public boolean delete(Integer id) {
         return sellerPosts.remove(id) != null;
     }
 
     @Override
-    public boolean existing(Long id) {
+    public boolean existing(Integer id) {
         return sellerPosts.containsKey(id);
     }
 }

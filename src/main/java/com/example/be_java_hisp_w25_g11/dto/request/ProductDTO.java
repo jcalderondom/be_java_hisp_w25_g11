@@ -10,11 +10,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProductDTO {
     @JsonProperty("product_id")
-    private int productId;
+    private int id;
     @JsonProperty("product_name")
     private String productName;
+    @JsonProperty("type")
     private String type;
+    @JsonProperty("brand")
     private String brand;
+    @JsonProperty("color")
     private String color;
+    @JsonProperty("notes")
     private String notes;
 }

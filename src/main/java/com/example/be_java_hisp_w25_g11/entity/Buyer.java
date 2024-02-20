@@ -11,11 +11,14 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Buyer {
-    private Long id;
+    private Integer id;
     private String name;
-    private Set<Seller> followed;
+    private Set<Integer> followed;
 
-    public Buyer(Long id, String name) {
+    public Buyer(
+            Integer id,
+            String name
+    ) {
         this.id = id;
         this.name = name;
     }
