@@ -4,6 +4,7 @@ import com.example.be_java_hisp_w25_g11.dto.commons.enums.EnumNameOrganizer;
 import com.example.be_java_hisp_w25_g11.dto.request.OrganizerByNameDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowedDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowerCountDTO;
+import com.example.be_java_hisp_w25_g11.dto.response.FollowerDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.SuccessDTO;
 import com.example.be_java_hisp_w25_g11.service.user.IUserService;
 import org.springframework.http.HttpStatus;
@@ -36,8 +37,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/followers/list")
-    //public ResponseEntity<FollowerDTO>  followersList(
-    public ResponseEntity<?>  followersList(
+    public ResponseEntity<FollowerDTO>  followersList(
         @PathVariable Integer userId,
         @RequestParam(defaultValue = "name_asc") String order
     ) {

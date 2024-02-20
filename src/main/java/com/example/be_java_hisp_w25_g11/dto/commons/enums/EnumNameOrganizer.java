@@ -8,7 +8,6 @@ public enum EnumNameOrganizer {
     NAME_ASC("name_asc"),
     NAME_DESC("name_desc");
 
-
     private String name;
     private EnumNameOrganizer(String name){
         this.name = name;
@@ -17,7 +16,7 @@ public enum EnumNameOrganizer {
     @JsonCreator
     public static EnumNameOrganizer getOrganizer(String value){
         for(EnumNameOrganizer enumOrganizer: EnumNameOrganizer.values()){
-            if(enumOrganizer.equals(value)){
+            if(enumOrganizer.name.equals(value)){
                 return enumOrganizer;
             }
         }
