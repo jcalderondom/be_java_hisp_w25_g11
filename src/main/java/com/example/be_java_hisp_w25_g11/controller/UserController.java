@@ -1,5 +1,7 @@
 package com.example.be_java_hisp_w25_g11.controller;
 
+import com.example.be_java_hisp_w25_g11.dto.commons.enums.EnumNameOrganizer;
+import com.example.be_java_hisp_w25_g11.dto.request.OrganizerByNameDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowedDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowerCountDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowerDTO;
@@ -36,17 +38,19 @@ public class UserController {
 
     @GetMapping("/{userId}/followers/list")
     public ResponseEntity<FollowerDTO>  followersList(
-        @PathVariable Integer userId
-
+        @PathVariable Integer userId,
+        @RequestParam(defaultValue = "name_asc") String order
     ) {
-        return new ResponseEntity<>(userService.buyersFollowSellers(userId), HttpStatus.OK);
+        return ResponseEntity.ok(this.userService.sortFollowers(new OrganizerByNameDTO(userId, EnumNameOrganizer.getOrganizer(order))));
     }
 
     @GetMapping("/{userId}/followed/list")
     public ResponseEntity<FollowedDTO> followedList(
         @PathVariable Integer userId,
-        @RequestParam(required = false) String order
-    ) {return ResponseEntity.ok(this.userService.sortFollowed(userId,order));}
+        @RequestParam(defaultValue = "name_asc") String order
+    ) {
+        return ResponseEntity.ok(this.userService.sortFollowed(new OrganizerByNameDTO(userId, EnumNameOrganizer.getOrganizer(order))));
+    }
 
     @PostMapping("/{userId}/unfollow/{userIdToUnfollow}")
     public ResponseEntity<SuccessDTO> unfollow(
