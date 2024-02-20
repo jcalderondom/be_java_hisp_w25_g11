@@ -4,18 +4,18 @@ import com.example.be_java_hisp_w25_g11.dto.response.FollowedDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowerCountDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.FollowerDTO;
 import com.example.be_java_hisp_w25_g11.dto.SuccessDTO;
-import com.example.be_java_hisp_w25_g11.service.UserServiceImp;
 import com.example.be_java_hisp_w25_g11.service.IUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController()
+@RestController
 @RequestMapping("/users/{userId}")
 public class UserController {
-    private UserServiceImp userService;
 
-    public UserController(UserServiceImp userService) {
+    private final IUserService userService;
+
+    public UserController(IUserService userService){
         this.userService = userService;
     }
 
@@ -26,17 +26,12 @@ public class UserController {
     ) {
         return new ResponseEntity<>(new SuccessDTO(), HttpStatus.OK);
     }
-    @GetMapping("/test")
-    public ResponseEntity<?> test() {
-        return new ResponseEntity<>(userService.followersSellersCount(1L), HttpStatus.OK);
-    }
 
     @GetMapping("/followers/count")
-    public ResponseEntity<?> followersCount(
-        @PathVariable Integer userId
+    public ResponseEntity<FollowerCountDTO> followersCount(
+        @PathVariable Long userId
     ) {
-
-        return new ResponseEntity<>(userService.getAll(), HttpStatus.OK);
+        return new ResponseEntity<>(userService.followersSellersCount(userId), HttpStatus.OK);
     }
 
     @GetMapping("/followers/list")
@@ -49,11 +44,9 @@ public class UserController {
 
     @GetMapping("/followed/list")
     public ResponseEntity<FollowedDTO> followedList(
-        @PathVariable Integer userId,
+        @PathVariable Long userId,
         @RequestParam(required = false) String order
-    ) {
-        return new ResponseEntity<>(new FollowedDTO(), HttpStatus.OK);
-    }
+    ) {return ResponseEntity.ok(this.userService.sortFollowed(userId,order));}
 
     @PostMapping("/unfollow/{userIdToUnfollow}")
     public ResponseEntity<SuccessDTO> unfollow(

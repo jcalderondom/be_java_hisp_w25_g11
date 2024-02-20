@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import java.util.Comparator;
+import java.util.stream.Stream;
+
 @Service
 public class UserServiceImp implements IUserService {
     private final IBuyerRepository buyerRepository;
@@ -78,10 +81,6 @@ public class UserServiceImp implements IUserService {
         );
 
     }
-    public List<Buyer> getAll(){
-        return buyerRepository.getAll();
-
-    }
 
     @Override
     public FollowerDTO buyersFollowSellers(Long sellerId) {
@@ -138,13 +137,33 @@ public class UserServiceImp implements IUserService {
     }
 
     @Override
-    public FollowerDTO sortFollowers(String order) {
+    public FollowerDTO sortFollowers(Long id,String order) {
         return null;
     }
 
     @Override
-    public FollowedDTO sortFollowed(String order) {
-        return null;
+    public FollowedDTO sortFollowed(Long id,String order) {
+        if(this.sellerRepository.get(id).isEmpty()){
+            throw new NotFoundException(String.format("User with Id "+id+" Not found"));
+        }
+        Seller seller = this.sellerRepository.get(id).get();
+        Stream<UserDTO> users = seller.getFollowed().stream()
+                //Filtramos para asegurarnos de que él id del usuario a mostrar sea un usuario existente como cliente o como vendedor
+                .filter(sellerId -> this.buyerRepository.get(sellerId).isPresent() || this.sellerRepository.get(sellerId).isPresent())
+                .map(sellerId ->{
+                    if(this.sellerRepository.get(sellerId).isPresent()){
+                        Seller lambdaSeller = this.sellerRepository.get(sellerId).get();
+                        return new UserDTO(lambdaSeller.getId(),lambdaSeller.getName());
+                    }
+                    Buyer lambdaBuyer = this.buyerRepository.get(sellerId).get();
+                    return new UserDTO(lambdaBuyer.getId(),lambdaBuyer.getName());
+                });
+        return new FollowedDTO(id,seller.getName(),
+                order.equals("name_asc")
+                        ? users.sorted(Comparator.comparing(UserDTO::getName)).toList()
+                        : order.equals("name_desc")
+                        ? users.sorted(Comparator.comparing(UserDTO::getName).reversed()).toList()
+                        : users.toList());
     }
 
     @Override
