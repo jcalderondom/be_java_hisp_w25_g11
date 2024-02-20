@@ -74,11 +74,12 @@ public class UserServiceImp implements IUserService {
 
     @Override
     public FollowerCountDTO followersSellersCount(Integer sellerId) {
-        return new FollowerCountDTO (
-                1,
-                "test",
-                buyerRepository.getAll().size()
-        );
+        Optional<Seller> seller = sellerRepository.get(sellerId);
+        if(seller.isEmpty())
+            throw new NotFoundException("Buyer does not exists");
+        int followersCount = seller.get().getFollowers().size();
+        return new FollowerCountDTO (sellerId, seller.get().getName(), followersCount);
+
 
     }
 
