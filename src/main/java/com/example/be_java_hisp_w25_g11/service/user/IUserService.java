@@ -10,7 +10,7 @@ public interface IUserService {
 
     SuccessDTO follow(Integer userId, Integer userIdToFollow);
     FollowerCountDTO followersSellersCount(Integer sellerId);
-    FollowerDTO buyersFollowSellers(Integer sellerId);
+    FollowerDTO userFollowSellers(Integer sellerId);
     FollowedDTO sellersFollowingByUsers(Integer userId);
     SuccessDTO unfollow(Integer userId, Integer sellerIdToUnfollow);
     FollowerDTO sortFollowers(OrganizerByNameDTO organizer);
