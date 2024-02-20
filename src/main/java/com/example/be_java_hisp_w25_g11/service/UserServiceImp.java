@@ -10,6 +10,7 @@ import com.example.be_java_hisp_w25_g11.entity.Seller;
 import com.example.be_java_hisp_w25_g11.exception.NotFoundException;
 import com.example.be_java_hisp_w25_g11.repository.buyer.BuyerRepositoryImp;
 import com.example.be_java_hisp_w25_g11.repository.seller.SellerRepositoryImp;
+import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import com.example.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,9 @@ public class UserServiceImp implements IUserService{
     public FollowerDTO buyersFollowSellers(Long sellerId) {
         Optional<Seller> seller = sellerRepositoryImp.get(sellerId);
         if(seller.isEmpty()){
+            if(buyerRepositoryImp.get(sellerId).isEmpty()){
+                throw new BadRequestException("Buyer does not have follorwer");
+            }
             throw new NotFoundException("Buyer does not exists");
         }
 
