@@ -1,23 +1,19 @@
 package com.example.be_java_hisp_w25_g11.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.Date;
 
-@Getter
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class SellerPost {
-    private Long id;
+    private Integer userId;
+    private Integer postId;
     private LocalDate date;
+    private Product product;
     private Integer Category;
     private Double price;
-    private Boolean saleItem;
-    private Double discount;
     private Seller seller;
-    private Product product;
 }

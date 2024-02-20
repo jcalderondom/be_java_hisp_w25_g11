@@ -1,7 +1,7 @@
 package com.example.be_java_hisp_w25_g11.controller;
 
-import com.example.be_java_hisp_w25_g11.dto.SuccessDTO;
-import com.example.be_java_hisp_w25_g11.dto.request.CreatePostDTO;
+import com.example.be_java_hisp_w25_g11.dto.request.CreatePostRequestDTO;
+import com.example.be_java_hisp_w25_g11.service.seller_post.ISellerPostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,12 +9,19 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/products")
 public class SellerPostController {
-    @PostMapping("/post")
-    public ResponseEntity<SuccessDTO> postNewProduct(
-            @RequestBody CreatePostDTO request
+    private final ISellerPostService sellerPostService;
+
+    public SellerPostController(
+            ISellerPostService sellerPostService
     ) {
-        // TODO: Full implementation (status codes: 200 ok & bad request, bodyless or dto)
-        return new ResponseEntity<>(new SuccessDTO(), HttpStatus.OK);
+        this.sellerPostService = sellerPostService;
+    }
+
+    @PostMapping("/post")
+    public ResponseEntity<?> postNewProduct(
+            @RequestBody CreatePostRequestDTO request
+    ) {
+        return new ResponseEntity<>(sellerPostService.createPost(request), HttpStatus.OK);
     }
 
     @GetMapping("/followed/{userId}/list")
@@ -22,7 +29,6 @@ public class SellerPostController {
             @PathVariable Integer userId,
             @RequestParam(required = false) String order
     ) {
-        // TODO: Full implementation (response: user_id, posts made (in last 2 weeks) by followed sellers list)
-        return null;
+        return new ResponseEntity<>(sellerPostService.getFollowedSellersLatestPosts(userId), HttpStatus.OK);
     }
 }
