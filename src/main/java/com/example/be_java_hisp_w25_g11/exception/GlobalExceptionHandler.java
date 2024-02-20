@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-
     @ExceptionHandler(ActionNotAllowedException.class)
     public ResponseEntity<?> actionNotAllowed(ActionNotAllowedException e){
         ExceptionDTO exceptionDTO = new ExceptionDTO(e.getMessage());
@@ -20,17 +19,10 @@ public class GlobalExceptionHandler {
         ExceptionDTO exceptionDTO = new ExceptionDTO(e.getMessage());
         return new ResponseEntity<>(exceptionDTO, HttpStatus.NOT_FOUND);
     }
-
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<?> notFound(BadRequestException e){
+    public ResponseEntity<?> badRequest(BadRequestException e){
         ExceptionDTO exceptionDTO = new ExceptionDTO(e.getMessage());
         return new ResponseEntity<>(exceptionDTO, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(NotFoundExeption.class)
-    public ResponseEntity<?> actionNotAllowed(NotFoundExeption e){
-        ExceptionDTO exceptionDTO = new ExceptionDTO(e.getMessage());
-        return new ResponseEntity<>(exceptionDTO, HttpStatus.NOT_FOUND);
     }
 
 }
