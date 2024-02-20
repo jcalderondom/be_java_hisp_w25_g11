@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -21,5 +22,6 @@ public class Buyer {
     ) {
         this.id = id;
         this.name = name;
+        this.followed = new HashSet<>();
     }
 }
