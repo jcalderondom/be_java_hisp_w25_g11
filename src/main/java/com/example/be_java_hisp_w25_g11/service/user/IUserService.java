@@ -11,9 +11,8 @@ public interface IUserService {
     SuccessDTO follow(Integer userId, Integer userIdToFollow);
     FollowerCountDTO followersSellersCount(Integer sellerId);
     FollowerDTO userFollowSellers(Integer sellerId);
-    FollowedDTO sellersFollowingByUsers(Integer userId);
     SuccessDTO unfollow(Integer userId, Integer sellerIdToUnfollow);
-    FollowerDTO sortFollowers(OrganizerByNameDTO organizer);
-    FollowedDTO sortFollowed(OrganizerByNameDTO organizer);
+    FollowerDTO sortFollowers(Integer userId, String order);
+    FollowedDTO sortFollowed(Integer userId, String order);
     boolean isSeller(Integer userId);
 }

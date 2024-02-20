@@ -39,17 +39,17 @@ public class UserController {
     @GetMapping("/{userId}/followers/list")
     public ResponseEntity<FollowerDTO>  followersList(
         @PathVariable Integer userId,
-        @RequestParam(defaultValue = "name_asc") String order
+        @RequestParam(required = false) String order
     ) {
-        return ResponseEntity.ok(this.userService.sortFollowers(new OrganizerByNameDTO(userId, EnumNameOrganizer.getOrganizer(order))));
+        return ResponseEntity.ok(this.userService.sortFollowers(userId, order));
     }
 
     @GetMapping("/{userId}/followed/list")
     public ResponseEntity<FollowedDTO> followedList(
         @PathVariable Integer userId,
-        @RequestParam(defaultValue = "name_asc") String order
+        @RequestParam(required = false) String order
     ) {
-        return ResponseEntity.ok(this.userService.sortFollowed(new OrganizerByNameDTO(userId, EnumNameOrganizer.getOrganizer(order))));
+        return ResponseEntity.ok(this.userService.sortFollowed(userId, order));
     }
 
     @PostMapping("/{userId}/unfollow/{userIdToUnfollow}")

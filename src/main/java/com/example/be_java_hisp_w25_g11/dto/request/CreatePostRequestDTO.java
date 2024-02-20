@@ -14,7 +14,7 @@ public class CreatePostRequestDTO {
     @JsonProperty("user_id")
     private int userId;
     @JsonProperty("date")
-    private LocalDate date;
+    private String date;
     @JsonProperty("product")
     private ProductDTO product;
     @JsonProperty("category")
