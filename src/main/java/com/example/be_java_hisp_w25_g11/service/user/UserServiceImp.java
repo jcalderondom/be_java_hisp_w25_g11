@@ -15,11 +15,9 @@ import org.modelmapper.ModelMapper;
 import com.example.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
 import com.example.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.Optional;
 
-import java.util.Comparator;
-import java.util.Set;
+import java.util.*;
+
 import java.util.stream.Stream;
 
 
@@ -58,6 +56,10 @@ public class UserServiceImp implements IUserService {
             throw new BadRequestException("El usuario a seguir debe ser un vendedor.");
         }
 
+        if (userId.equals(userIdToFollow)) {
+            throw new BadRequestException("El usuario no se puede seguir a si mismo.");
+        }
+
         if (user instanceof Buyer) {
             if (((Buyer) user).getFollowed().contains(userIdToFollow)) {
                 throw new BadRequestException("El comprador con id="+userId+" ya sigue al vendedor con id="+userIdToFollow+".");
@@ -79,22 +81,24 @@ public class UserServiceImp implements IUserService {
     @Override
     public FollowerCountDTO followersSellersCount(Integer sellerId) {
         Optional<Seller> seller = sellerRepository.get(sellerId);
-        if(seller.isEmpty())
-            throw new NotFoundException("Buyer does not exists");
+        if(seller.isEmpty()){
+            if(buyerRepository.get(sellerId).isPresent()){
+                throw new BadRequestException("Un comprador no puede tener seguidores.");
+            }
+            throw new NotFoundException("El vendedor con id="+sellerId+" no existe.");
+        }
         int followersCount = seller.get().getFollowers().size();
         return new FollowerCountDTO (sellerId, seller.get().getName(), followersCount);
-
-
     }
 
     @Override
-    public FollowerDTO buyersFollowSellers(Integer sellerId) {
+    public FollowerDTO userFollowSellers(Integer sellerId) {
         Optional<Seller> seller = sellerRepository.get(sellerId);
         if(seller.isEmpty()){
             if(buyerRepository.get(sellerId).isPresent()){
-                throw new BadRequestException("Buyer does not have followers");
+                throw new BadRequestException("Un comprador no puede tener seguidores.");
             }
-            throw new NotFoundException("Buyer does not exists");
+            throw new NotFoundException("El vendedor con id="+sellerId+" no existe.");
         }
 
         List<UserDTO> followers = seller.get().getFollowers()
@@ -103,7 +107,6 @@ public class UserServiceImp implements IUserService {
                     if (buyerRepository.existing(followerId)
                     ) {
                         return buyerRepository.get(followerId);
-
                     }
                     else{
                         return sellerRepository.get(followerId);
@@ -116,7 +119,40 @@ public class UserServiceImp implements IUserService {
 
     @Override
     public FollowedDTO sellersFollowingByUsers(Integer userId) {
-        return null;
+        Set<Integer> followedBySeller;
+        Set<Integer> followedByBuyer;
+        List<UserDTO> userDTOList = null;
+        String name;
+        if (sellerRepository.existing(userId)) {
+            name = sellerRepository.get(userId).get().getName();
+            Seller sellerResult = sellerRepository.getAll().stream()
+                    .filter(seller -> seller.getId().equals(userId))
+                    .findFirst().orElse(null);
+            followedBySeller = sellerResult != null ? sellerResult.getFollowed() : null;
+            List<Seller> sellerList = new ArrayList<>();
+            if (followedBySeller != null) {
+                for (Integer sellerFind : followedBySeller) {
+                    sellerList.addAll(sellerRepository.getAll().stream()
+                            .filter(seller -> seller.getId().equals(sellerFind))
+                            .toList());
+                    userDTOList = sellerList.stream()
+                            .map(seller -> modelMapper.map(seller, UserDTO.class))
+                            .toList();
+                }
+            }
+        } else if (buyerRepository.existing(userId)) {
+            name = buyerRepository.get(userId).get().getName();
+            Buyer buyerResult = buyerRepository.getAll().stream()
+                    .filter(seller -> seller.getId().equals(userId))
+                    .findFirst().orElse(null);
+            followedByBuyer = buyerResult != null ? buyerResult.getFollowed() : null;
+            userDTOList = followedByBuyer.stream()
+                    .map(buyerId -> modelMapper.map(buyerRepository.get(buyerId).get(),UserDTO.class))
+                    .toList();
+        } else {
+            throw new NotFoundException("El usuario con id="+userId+" no existe.");
+        }
+        return new FollowedDTO(userId, name, userDTOList);
     }
 
     @Override
@@ -130,13 +166,13 @@ public class UserServiceImp implements IUserService {
 
         if (user instanceof Buyer) {
             if (!((Buyer) user).getFollowed().contains(sellerIdToUnfollow)) {
-                throw new BadRequestException("El comprador con id="+userId+" no sigue al vendedor con id"+sellerIdToUnfollow+".");
+                throw new BadRequestException("El comprador con id="+userId+" no sigue al vendedor con id="+sellerIdToUnfollow+".");
             }
             ((Buyer) user).getFollowed().remove(sellerIdToUnfollow);
             ((Seller) userToUnfollow).getFollowers().remove(userId);
         } else if (user instanceof Seller) {
             if (!((Seller) user).getFollowed().contains(sellerIdToUnfollow)) {
-                throw new BadRequestException("El vendedor con id="+userId+" no sigue al vendedor con id"+sellerIdToUnfollow+".");
+                throw new BadRequestException("El vendedor con id="+userId+" no sigue al vendedor con id="+sellerIdToUnfollow+".");
             }
             ((Seller) user).getFollowed().remove(sellerIdToUnfollow);
             ((Seller) userToUnfollow).getFollowers().remove(userId);
