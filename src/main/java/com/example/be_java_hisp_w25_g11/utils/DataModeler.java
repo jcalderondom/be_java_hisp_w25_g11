@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 
 @Component
-public class DataModeler {
+public class    DataModeler {
 
     IBuyerRepository userRepository;
     ISellerRepository sellerRepository;
