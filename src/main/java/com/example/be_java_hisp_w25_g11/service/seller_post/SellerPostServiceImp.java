@@ -5,6 +5,7 @@ import com.example.be_java_hisp_w25_g11.dto.commons.enums.EnumDateOrganizer;
 import com.example.be_java_hisp_w25_g11.dto.request.CreatePostPromoRequestDTO;
 import com.example.be_java_hisp_w25_g11.dto.request.CreatePostRequestDTO;
 import com.example.be_java_hisp_w25_g11.dto.request.OrganizerByDateDTO;
+import com.example.be_java_hisp_w25_g11.dto.response.PostSellerPromoCountDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.SellerPostsListDTO;
 import com.example.be_java_hisp_w25_g11.entity.Buyer;
 import com.example.be_java_hisp_w25_g11.entity.Product;
@@ -89,7 +90,6 @@ public class SellerPostServiceImp implements ISellerPostService {
     @Override
     public SellerPostsListDTO getFollowedSellersLatestPosts(Integer userId, String order) {
         List<SellerPost> posts;
-
         Optional<Buyer> buyer = buyerRepository.get(userId);
         Optional<Seller> seller = sellerRepository.get(userId);
         if (buyer.isPresent())
@@ -97,7 +97,6 @@ public class SellerPostServiceImp implements ISellerPostService {
         else if (seller.isPresent())
             posts = getMergedPostsList(seller.get().getFollowed());
         else throw new NotFoundException(String.format("No se encontró un usuario con el id %d", userId));
-
         if (order == null) {
             return new SellerPostsListDTO(
                     userId,
@@ -107,10 +106,8 @@ public class SellerPostServiceImp implements ISellerPostService {
                             .toList()
             );
         }
-
         Comparator<SellerPost> comparator = order.equalsIgnoreCase("DATE_ASC") ?
                 Comparator.comparing(SellerPost::getDate) : Comparator.comparing(SellerPost::getDate).reversed();
-
         return new SellerPostsListDTO(
                 userId,
                 posts
@@ -121,7 +118,20 @@ public class SellerPostServiceImp implements ISellerPostService {
         );
     }
 
-
+    @Override
+    public PostSellerPromoCountDTO countPostSellerPromo(Integer userId) {
+        Optional<Seller> seller = sellerRepository.get(userId);
+        if (seller.isEmpty())
+            throw new NotFoundException("No existe un vendedor con ese ID");
+        List<SellerPost> sellerPostPromoBySeller;
+        sellerPostPromoBySeller = sellerPostRepository.getAll().stream().filter(sellerPost -> sellerPost.getUserId().equals(userId)).toList();
+        sellerPostPromoBySeller = sellerPostPromoBySeller.stream().filter(s -> s.getHasPromo().equals(true)).toList();
+        return new PostSellerPromoCountDTO(
+                userId,
+                seller.get().getName(),
+                sellerPostPromoBySeller.size()
+        );
+    }
 
 
     private List<SellerPost> getMergedPostsList(Set<Integer> followed) {

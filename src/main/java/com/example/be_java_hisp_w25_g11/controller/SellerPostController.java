@@ -38,4 +38,10 @@ public class SellerPostController {
     ) {
         return new ResponseEntity<>(sellerPostService.getFollowedSellersLatestPosts(userId, order), HttpStatus.OK);
     }
+    @GetMapping("/promo-post/count")
+    public ResponseEntity<?> countPromoProudct(
+            @RequestParam(name = "user_id") Integer userId
+    ) {
+        return new ResponseEntity<>(sellerPostService.countPostSellerPromo(userId), HttpStatus.OK);
+    }
 }
