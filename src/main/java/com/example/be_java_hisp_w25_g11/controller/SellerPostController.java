@@ -39,9 +39,16 @@ public class SellerPostController {
         return new ResponseEntity<>(sellerPostService.getFollowedSellersLatestPosts(userId, order), HttpStatus.OK);
     }
     @GetMapping("/promo-post/count")
-    public ResponseEntity<?> countPromoProudct(
+    public ResponseEntity<?> countPromoProduct(
             @RequestParam(name = "user_id") Integer userId
     ) {
-        return new ResponseEntity<>(sellerPostService.countPostSellerPromo(userId), HttpStatus.OK);
+        return new ResponseEntity<>(sellerPostService.countSellerPostsPromo(userId), HttpStatus.OK);
+    }
+
+    @GetMapping("/promo-post/list")
+    public ResponseEntity<?> ListPromoProduct(
+            @RequestParam(name = "user_id") Integer userId
+    ) {
+        return new ResponseEntity<>(sellerPostService.getSellerPostsPromo(userId), HttpStatus.OK);
     }
 }

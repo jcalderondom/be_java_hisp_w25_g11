@@ -44,7 +44,6 @@ public class SellerPostRepositoryImp implements ISellerPostRepository {
     public Optional<SellerPost> get(Integer id) {
         return Optional.ofNullable(sellerPosts.get(id));
     }
-
     @Override
     public boolean update(Integer id, SellerPost sellerPost) {
         if (get(id).isEmpty()) {

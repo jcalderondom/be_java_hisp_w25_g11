@@ -1,11 +1,11 @@
 package com.example.be_java_hisp_w25_g11.service.seller_post;
 
 import com.example.be_java_hisp_w25_g11.dto.SellerPostDTO;
-import com.example.be_java_hisp_w25_g11.dto.commons.enums.EnumDateOrganizer;
+import com.example.be_java_hisp_w25_g11.dto.UserDTO;
 import com.example.be_java_hisp_w25_g11.dto.request.CreatePostPromoRequestDTO;
 import com.example.be_java_hisp_w25_g11.dto.request.CreatePostRequestDTO;
-import com.example.be_java_hisp_w25_g11.dto.request.OrganizerByDateDTO;
-import com.example.be_java_hisp_w25_g11.dto.response.PostSellerPromoCountDTO;
+import com.example.be_java_hisp_w25_g11.dto.response.SellerPostPromoCountDTO;
+import com.example.be_java_hisp_w25_g11.dto.response.SellerPostPromoListDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.SellerPostsListDTO;
 import com.example.be_java_hisp_w25_g11.entity.Buyer;
 import com.example.be_java_hisp_w25_g11.entity.Product;
@@ -119,18 +119,38 @@ public class SellerPostServiceImp implements ISellerPostService {
     }
 
     @Override
-    public PostSellerPromoCountDTO countPostSellerPromo(Integer userId) {
+    public SellerPostPromoCountDTO countSellerPostsPromo(Integer userId) {
+        List<SellerPost> sellerPostPromoBySeller = listPromoSellerPosts(userId);
+        return new SellerPostPromoCountDTO(
+                userId,
+                sellerPostPromoBySeller.get(0).getSeller().getName(),
+                sellerPostPromoBySeller.size()
+        );
+    }
+
+    @Override
+    public SellerPostPromoListDTO getSellerPostsPromo(Integer userId) {
+        List<SellerPost> sellerPost = listPromoSellerPosts(userId);
+        List<SellerPostDTO> sellerPostDTO = sellerPost.stream()
+                .map(u -> modelMapper.map(u, SellerPostDTO.class)).toList();
+        return new SellerPostPromoListDTO(
+                userId,
+                sellerPost.get(0).getSeller().getName(),
+                sellerPostDTO
+
+        );
+
+    }
+
+    private List<SellerPost> listPromoSellerPosts(Integer userId){
         Optional<Seller> seller = sellerRepository.get(userId);
         if (seller.isEmpty())
             throw new NotFoundException("No existe un vendedor con ese ID");
-        List<SellerPost> sellerPostPromoBySeller;
-        sellerPostPromoBySeller = sellerPostRepository.getAll().stream().filter(sellerPost -> sellerPost.getUserId().equals(userId)).toList();
-        sellerPostPromoBySeller = sellerPostPromoBySeller.stream().filter(s -> s.getHasPromo().equals(true)).toList();
-        return new PostSellerPromoCountDTO(
-                userId,
-                seller.get().getName(),
-                sellerPostPromoBySeller.size()
-        );
+
+        return sellerPostRepository.getAll()
+                .stream()
+                .filter(sellerPost -> sellerPost.getUserId().equals(userId) && sellerPost.getHasPromo().equals(true))
+                .toList();
     }
 
 
