@@ -2,6 +2,7 @@ package com.example.be_java_hisp_w25_g11.service.seller_post;
 
 import com.example.be_java_hisp_w25_g11.dto.SellerPostDTO;
 import com.example.be_java_hisp_w25_g11.dto.commons.enums.EnumDateOrganizer;
+import com.example.be_java_hisp_w25_g11.dto.request.CreatePostPromoRequestDTO;
 import com.example.be_java_hisp_w25_g11.dto.request.CreatePostRequestDTO;
 import com.example.be_java_hisp_w25_g11.dto.request.OrganizerByDateDTO;
 import com.example.be_java_hisp_w25_g11.dto.response.SellerPostsListDTO;
@@ -61,6 +62,29 @@ public class SellerPostServiceImp implements ISellerPostService {
 
         return modelMapper.map(sellerPost, SellerPostDTO.class);
     }
+    public SellerPostDTO createPostPromo(CreatePostPromoRequestDTO request) {
+        Optional<Seller> seller = sellerRepository.get(request.getUserId());
+        if (seller.isEmpty())
+            throw new NotFoundException("No existe un vendedor con ese ID");
+
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ENGLISH);
+        SellerPost sellerPost = new SellerPost(
+                request.getUserId(),
+                null,
+                LocalDate.parse(request.getDate(), dateTimeFormatter),
+                modelMapper.map(request.getProduct(), Product.class),
+                request.getCategory(),
+                request.getPrice(),
+                seller.get(),
+                request.isHasPromo(),
+                request.getDiscount()
+        );
+
+        sellerPost = sellerPostRepository.create(sellerPost);
+        seller.get().getPosts().add(sellerPost);
+
+        return modelMapper.map(sellerPost, SellerPostDTO.class);
+    }
 
     @Override
     public SellerPostsListDTO getFollowedSellersLatestPosts(Integer userId, String order) {
@@ -96,6 +120,9 @@ public class SellerPostServiceImp implements ISellerPostService {
                         .toList()
         );
     }
+
+
+
 
     private List<SellerPost> getMergedPostsList(Set<Integer> followed) {
         List<SellerPost> posts;

@@ -31,15 +31,7 @@ public class UserServiceImp implements IUserService {
         this.modelMapper = modelMapper;
     }
 
-    private Object getUser(Integer id) {
-        if (buyerRepository.existing(id)) {
-            return buyerRepository.get(id).get();
-        } else if (sellerRepository.existing(id)) {
-            return sellerRepository.get(id).get();
-        } else {
-            throw new NotFoundException("El usuario con id="+id+" no existe.");
-        }
-    }
+
 
     @Override
     public SuccessDTO follow(Integer userId, Integer userIdToFollow) {
@@ -111,36 +103,6 @@ public class UserServiceImp implements IUserService {
         return new FollowerDTO(sellerId,seller.get().getName(),followers);
     }
 
-    private List<UserDTO> getSocialUsersList(Integer userId, String type) {
-        Optional<Buyer> buyerOptional = buyerRepository.get(userId);
-        Optional<Seller> sellerOptional = sellerRepository.get(userId);
-        if (buyerOptional.isPresent()) {
-            return getSocialListHelper(buyerOptional.get().getFollowed());
-        } else if (sellerOptional.isPresent()) {
-            return type.equalsIgnoreCase("followers")
-                    ? getSocialListHelper(sellerOptional.get().getFollowers())
-                    : getSocialListHelper(sellerOptional.get().getFollowed());
-        } else {
-            throw new NotFoundException("No se encontró un usuario con ese ID");
-        }
-    }
-
-    private List<UserDTO> getSocialListHelper(Set<Integer> output) {
-        return output
-                .stream()
-                .map(v -> {
-                    Optional<Buyer> buyer = buyerRepository.get(v);
-                    Optional<Seller> seller = sellerRepository.get(v);
-                    if (buyer.isPresent())
-                        return modelMapper.map(buyer.get(), UserDTO.class);
-                    else if (seller.isPresent())
-                        return modelMapper.map(seller.get(), UserDTO.class);
-                    else
-                        throw new NotFoundException("No se encontró uno de los IDs");
-                })
-                .toList();
-    }
-
     @Override
     public SuccessDTO unfollow(Integer userId, Integer sellerIdToUnfollow) {
         Object user = getUser(userId);
@@ -167,6 +129,26 @@ public class UserServiceImp implements IUserService {
         }
         return new SuccessDTO("El usuario con id="+userId+" ha dejado de seguir al vendedor con id="+sellerIdToUnfollow+".");
     }
+
+
+
+    private List<UserDTO> getSocialListHelper(Set<Integer> output) {
+        return output
+                .stream()
+                .map(v -> {
+                    Optional<Buyer> buyer = buyerRepository.get(v);
+                    Optional<Seller> seller = sellerRepository.get(v);
+                    if (buyer.isPresent())
+                        return modelMapper.map(buyer.get(), UserDTO.class);
+                    else if (seller.isPresent())
+                        return modelMapper.map(seller.get(), UserDTO.class);
+                    else
+                        throw new NotFoundException("No se encontró uno de los IDs");
+                })
+                .toList();
+    }
+
+
 
     @Override
     public FollowerDTO sortFollowers(Integer userId, String order) {
@@ -260,7 +242,7 @@ public class UserServiceImp implements IUserService {
         return new UserDTO(lambdaBuyer.getId(),lambdaBuyer.getName());
     }
 
-    //Filtramos para asegurarnos de que él id del usuario a mostrar sea un usuario existente como cliente o como vendedor
+
     private boolean isThisIdInSellerOrBuyerRepositories(Integer userId){
         return  this.buyerRepository.get(userId).isPresent() || this.sellerRepository.get(userId).isPresent();
     }
@@ -268,5 +250,29 @@ public class UserServiceImp implements IUserService {
     @Override
     public boolean isSeller(Integer userId) {
         return false;
+    }
+    private Object getUser(Integer id) {
+        if (buyerRepository.existing(id)) {
+            return buyerRepository.get(id).get();
+        } else if (sellerRepository.existing(id)) {
+            return sellerRepository.get(id).get();
+        } else {
+            throw new NotFoundException("El usuario con id="+id+" no existe.");
+        }
+    }
+
+
+    private List<UserDTO> getSocialUsersList(Integer userId, String type) {
+        Optional<Buyer> buyerOptional = buyerRepository.get(userId);
+        Optional<Seller> sellerOptional = sellerRepository.get(userId);
+        if (buyerOptional.isPresent()) {
+            return getSocialListHelper(buyerOptional.get().getFollowed());
+        } else if (sellerOptional.isPresent()) {
+            return type.equalsIgnoreCase("followers")
+                    ? getSocialListHelper(sellerOptional.get().getFollowers())
+                    : getSocialListHelper(sellerOptional.get().getFollowed());
+        } else {
+            throw new NotFoundException("No se encontró un usuario con ese ID");
+        }
     }
 }

@@ -11,7 +11,7 @@ import java.util.*;
 @Repository
 public class SellerPostRepositoryImp implements ISellerPostRepository {
     private final Map<Integer,SellerPost> sellerPosts;
-    private Integer index = 0;
+    private Integer index = 1;
 
     public SellerPostRepositoryImp() {
         this.sellerPosts = new HashMap<>();

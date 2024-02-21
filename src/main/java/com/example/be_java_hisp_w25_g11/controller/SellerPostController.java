@@ -1,5 +1,6 @@
 package com.example.be_java_hisp_w25_g11.controller;
 
+import com.example.be_java_hisp_w25_g11.dto.request.CreatePostPromoRequestDTO;
 import com.example.be_java_hisp_w25_g11.dto.request.CreatePostRequestDTO;
 import com.example.be_java_hisp_w25_g11.service.seller_post.ISellerPostService;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,12 @@ public class SellerPostController {
             @RequestBody CreatePostRequestDTO request
     ) {
         return new ResponseEntity<>(sellerPostService.createPost(request), HttpStatus.OK);
+    }
+    @PostMapping("/promo-post")
+    public ResponseEntity<?> postNewPromoProduct(
+            @RequestBody CreatePostPromoRequestDTO request
+    ) {
+        return new ResponseEntity<>(sellerPostService.createPostPromo(request), HttpStatus.OK);
     }
 
     @GetMapping("/followed/{userId}/list")
